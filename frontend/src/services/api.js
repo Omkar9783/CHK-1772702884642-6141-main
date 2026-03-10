@@ -291,15 +291,57 @@ export const getHistory = async () => {
 
 export const getWeatherData = async () => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        temp: "28°C",
-        humidity: "85%",
-        rain: "60%",
-        wind: "12 km/h",
-        alert: "High humidity detected - fungal risk",
-      });
-    }, 500);
+    // Helper function to fetch from Open-Meteo
+    const fetchWeather = async (lat, lon) => {
+      try {
+        const response = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m`
+        );
+        const data = await response.json();
+        const current = data.current;
+        
+        let alert = "Conditions are normal";
+        if (current.relative_humidity_2m > 80) {
+          alert = "High humidity detected - fungal risk!";
+        } else if (current.precipitation > 5) {
+          alert = "Heavy rain expected - delay chemical sprays.";
+        }
+
+        resolve({
+          temp: `${Math.round(current.temperature_2m)}°C`,
+          humidity: `${current.relative_humidity_2m}%`,
+          rain: `${current.precipitation} mm`,
+          wind: `${Math.round(current.wind_speed_10m)} km/h`,
+          alert: alert,
+        });
+      } catch (err) {
+        console.error("Failed to fetch live weather", err);
+        // Fallback mock
+        resolve({
+          temp: "28°C",
+          humidity: "85%",
+          rain: "0 mm",
+          wind: "12 km/h",
+          alert: "High humidity detected - fungal risk (Mock)",
+        });
+      }
+    };
+
+    // Try to get user's location, fallback to Mumbai if denied/failed
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          fetchWeather(position.coords.latitude, position.coords.longitude);
+        },
+        () => {
+          // Default to Mumbai
+          fetchWeather(19.0760, 72.8777);
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      fetchWeather(19.0760, 72.8777);
+    }
   });
 };
 
