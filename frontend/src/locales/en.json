@@ -1,0 +1,20 @@
+{
+  "appTitle": "CropCare AI",
+  "nav": {
+    "home": "Dashboard",
+    "detect": "Disease Detection",
+    "library": "Crop Library",
+    "history": "History"
+  },
+  "dashboard": {
+    "welcome": "Welcome, Farmer!",
+    "weather": "Weather Overview",
+    "quickActions": "Quick Actions",
+    "actionUpload": "Upload Crop Image",
+    "actionLibrary": "Browse Diseases",
+    "actionHelp": "Help Center"
+  },
+  "footer": {
+    "text": "Empowering Farmers with AI"
+  }
+}

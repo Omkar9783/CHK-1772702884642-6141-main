@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-green: oklch(0.6 0.18 155);
+  --color-brand-emerald: oklch(0.55 0.2 165);
+  --color-brand-brown: oklch(0.35 0.1 45);
+  --color-brand-amber: oklch(0.8 0.15 85);
+  --color-brand-orange: oklch(0.7 0.2 60);
+
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --radius-glass: 24px;
+}
+
+@layer base {
+  body {
+    background: radial-gradient(circle at top right, #f0fdf4, #f8fafc);
+    color: #1e293b;
+    font-family: "Outfit", "Inter", system-ui, sans-serif;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-glass);
+    box-shadow: var(--shadow-glass);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.85);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.12);
+  }
+
+  .btn-primary {
+    @apply bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl 
+           font-bold shadow-lg shadow-emerald-200 transition-all active:scale-95
+           flex items-center justify-center gap-2;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-xl transition-all hover:bg-white/20 font-medium;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+.stagger-3 {
+  animation-delay: 0.3s;
+}

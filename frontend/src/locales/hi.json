@@ -1,0 +1,20 @@
+{
+  "appTitle": "क्रॉपकेयर एआई",
+  "nav": {
+    "home": "डैशबोर्ड",
+    "detect": "रोग पहचान",
+    "library": "फसल पुस्तकालय",
+    "history": "इतिहास"
+  },
+  "dashboard": {
+    "welcome": "नमस्ते, किसान!",
+    "weather": "मौसम अवलोकन",
+    "quickActions": "त्वरित क्रियाएं",
+    "actionUpload": "फसल छवि अपलोड करें",
+    "actionLibrary": "रोग ब्राउज़ करें",
+    "actionHelp": "मदद केंद्र"
+  },
+  "footer": {
+    "text": "एआई से किसानों को सशक्त बनाना"
+  }
+}
