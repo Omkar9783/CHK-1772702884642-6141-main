@@ -293,8 +293,8 @@ const DiseaseDetection = () => {
                   </div>
                 </div>
               ) : (
-              {/* ── Results View State 2: Recommendations ───────────────── */}
                 <div className="space-y-8 animate-in slide-in-from-bottom-5 duration-500">
+                  {/* ── Results View State 2: Recommendations ───────────────── */}
                   <div className="flex items-center justify-between bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
                     <h3 className="font-bold text-emerald-900">Treatment Plan for {result.diseaseName}</h3>
                     <button 
@@ -311,6 +311,8 @@ const DiseaseDetection = () => {
               )}
             </div>
           ) : (
+            /* ── Idle / Waiting ──────────────────────────────────────────── */
+            <div className="glass-card p-12 flex flex-col items-center justify-center min-h-[500px] text-center border-2 border-dashed border-emerald-100 bg-white/40">
               <div className="bg-emerald-50 p-6 rounded-full mb-6">
                 <ShieldCheck className="w-16 h-16 text-emerald-200" />
               </div>
