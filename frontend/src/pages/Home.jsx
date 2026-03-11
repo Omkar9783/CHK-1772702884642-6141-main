@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import HelpCenter from "../components/HelpCenter";
+import ExpertCard from "../components/ExpertCard";
+
 const Home = () => {
   const { t } = useTranslation();
   const [weather, setWeather] = useState(null);
@@ -167,6 +170,11 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Help Center Assistant */}
+      <section className="mt-12">
+        <HelpCenter />
+      </section>
+
       {/* Community & Expert Section */}
       <section className="space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-end gap-4">
@@ -183,47 +191,37 @@ const Home = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             {
               name: "Dr. Aris Sudarsono",
               role: "Plant Pathologist",
+              location: "Indonesia",
+              status: "online",
               img: "https://images.unsplash.com/photo-1559839734-2b71f1536783",
+              knowledge: ["Rice Blast", "Tomato Blight", "Cassava Mosaic", "Fungal Infections"],
+              bio: "Dr. Sudarsono has over 15 years of experience diagnosing tropical and sub-tropical crop diseases. He specializes in fungal pathogens affecting staple crops and advocates for organic remediation techniques."
             },
             {
               name: "Sarah Jenkins",
-              role: "Soil Scientist",
+              role: "Soil Health Expert",
+              location: "United States",
+              status: "online",
               img: "https://images.unsplash.com/photo-1594824476967-48c8b964273f",
+              knowledge: ["Nutrient Deficiencies", "Soil pH", "Corn Smut", "Crop Rotation"],
+              bio: "Sarah is an agronomist focusing on regenerative agriculture. She helps farmers balance soil chemistry to naturally resist bacterial outbeaks in high-yield crops like corn and wheat."
             },
             {
               name: "Rahul Sharma",
-              role: "Precision Farming Specialist",
+              role: "Precision Agronomist",
+              location: "India",
+              status: "offline",
               img: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d",
+              knowledge: ["Pest Management", "Mango Hopper", "Apple Scab", "Drip Irrigation"],
+              bio: "Rahul leverages modern sensing technology to detect micro-climate changes that lead to pest infestations. He provides actionable insights for orchards and fruit crops."
             },
           ].map((expert, i) => (
-            <div key={i} className="glass-card p-6 flex items-center gap-6">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-lg border-2 border-white flex-shrink-0">
-                <img
-                  src={expert.img}
-                  alt={expert.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <h4 className="font-black text-gray-900 leading-tight">
-                  {expert.name}
-                </h4>
-                <p className="text-emerald-600 text-sm font-bold">
-                  {expert.role}
-                </p>
-                <div className="mt-2 flex gap-1">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                  <span className="text-[10px] font-black text-gray-400 uppercase">
-                    {t("experts.online")}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <ExpertCard key={i} expert={expert} />
           ))}
         </div>
 
