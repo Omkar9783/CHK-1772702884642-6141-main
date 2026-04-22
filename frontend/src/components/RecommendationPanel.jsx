@@ -1,65 +1,86 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ShieldAlert, Leaf, TestTube, Recycle } from "lucide-react";
+import { Leaf, FlaskConical, ShieldCheck, Info } from "lucide-react";
 
-// eslint-disable-next-line no-unused-vars
-const OptionCard = ({ title, items, icon: Icon, colorClass, bgClass }) => (
-  <div
-    className={`p-5 rounded-xl border-l-4 ${colorClass} ${bgClass} transition-shadow hover:shadow-sm`}>
-    <h4 className="font-bold flex items-center gap-2 mb-3 text-gray-900">
-      <Icon className="w-5 h-5 opacity-70" />
-      {title}
-    </h4>
-    <ul className="space-y-2">
-      {items.map((item, idx) => (
-        <li key={idx} className="flex gap-2 text-gray-700">
-          <span className="font-bold opacity-50">•</span>
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
+const TreatmentItem = ({ item }) => (
+  <div className="flex gap-4 p-4 bg-white/50 rounded-2xl border border-gray-100 group transition-all hover:border-emerald-200 hover:shadow-md">
+    <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2 shrink-0 group-hover:scale-125 transition-transform" />
+    <span className="text-gray-700 font-medium text-sm leading-relaxed">{item}</span>
   </div>
 );
 
 const RecommendationPanel = ({ recommendations }) => {
   const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState('biological');
+
   if (!recommendations) return null;
 
-  return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mt-6">
-      <h3 className="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">
-        {t("detection.recommendations")}
-      </h3>
+  const tabs = [
+    { id: 'biological', label: 'Biological', icon: Leaf, color: 'emerald', data: recommendations.biological },
+    { id: 'chemical', label: 'Chemical', icon: FlaskConical, color: 'blue', data: recommendations.chemical },
+    { id: 'preventive', label: 'Preventive', icon: ShieldCheck, color: 'purple', data: recommendations.preventive },
+  ];
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <OptionCard
-          title={t("detection.recImmediate")}
-          items={recommendations.immediate}
-          icon={ShieldAlert}
-          colorClass="border-red-500"
-          bgClass="bg-red-50/50"
-        />
-        <OptionCard
-          title={t("detection.recOrganic")}
-          items={recommendations.organic}
-          icon={Leaf}
-          colorClass="border-emerald-500"
-          bgClass="bg-emerald-50/50"
-        />
-        <OptionCard
-          title={t("detection.recChemical")}
-          items={recommendations.chemical}
-          icon={TestTube}
-          colorClass="border-blue-500"
-          bgClass="bg-blue-50/50"
-        />
-        <OptionCard
-          title={t("detection.recPreventive")}
-          items={recommendations.preventive}
-          icon={Recycle}
-          colorClass="border-purple-500"
-          bgClass="bg-purple-50/50"
-        />
+  return (
+    <div className="glass-card p-1 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-700">
+      <div className="p-8 pb-4">
+        <h3 className="text-2xl font-black text-emerald-900 mb-2">Available Treatments</h3>
+        <p className="text-emerald-700/60 font-bold text-xs uppercase tracking-widest">Select a method for more details</p>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="flex border-b border-gray-100 px-4">
+        {tabs.map((tab) => {
+          // Explicitly map colors to their tailwind classes for safelisting
+          const colorClasses = {
+            emerald: { text: 'text-emerald-600', bg: 'bg-emerald-500' },
+            blue: { text: 'text-blue-600', bg: 'bg-blue-500' },
+            purple: { text: 'text-purple-600', bg: 'bg-purple-500' },
+          };
+          const textColorClass = activeTab === tab.id ? colorClasses[tab.color].text : 'text-gray-400 hover:text-gray-600';
+          const bgColorClass = colorClasses[tab.color].bg;
+
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 flex items-center justify-center gap-3 py-5 font-black text-sm transition-all relative ${textColorClass}`}
+            >
+              <tab.icon size={18} />
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className={`absolute bottom-0 left-0 right-0 h-1 ${bgColorClass} rounded-t-full`} />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="p-8 bg-gray-50/30">
+        <div className="max-w-2xl mx-auto space-y-4">
+          {tabs.find(t => t.id === activeTab)?.data?.length > 0 ? (
+            tabs.find(t => t.id === activeTab).data.map((item, idx) => (
+              <TreatmentItem key={idx} item={item} />
+            ))
+          ) : (
+            <div className="py-12 flex flex-col items-center text-center">
+              <Info className="text-gray-300 mb-4" size={48} />
+              <p className="text-gray-500 font-bold">No specific {activeTab} treatments available.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-amber-50 p-6 border-t border-amber-100 flex items-start gap-4">
+        <div className="bg-amber-100 p-2 rounded-xl text-amber-600">
+          <Info size={20} />
+        </div>
+        <div>
+          <h4 className="font-black text-amber-900 text-sm">Farmer's Note</h4>
+          <p className="text-amber-800/70 text-xs font-bold mt-1 leading-relaxed">
+            Always read labels carefully and follow local regulations before applying chemical treatments. Use protective gear.
+          </p>
+        </div>
       </div>
     </div>
   );

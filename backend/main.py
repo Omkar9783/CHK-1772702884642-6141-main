@@ -25,8 +25,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATH = "crop_disease_model.h5"
-LABELS_PATH = "labels.txt"
+MODEL_PATH = "crop_disease_model_new.h5" if os.path.exists("crop_disease_model_new.h5") else "crop_disease_model.h5"
+LABELS_PATH = "labels_new.txt" if os.path.exists("labels_new.txt") else "labels.txt"
 
 model = None
 labels = []
@@ -63,7 +63,7 @@ async def startup_event():
 def preprocess_image(image_bytes: bytes) -> np.ndarray:
     img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     img = img.resize((224, 224))
-    img_array = np.array(img) / 255.0
+    img_array = np.array(img).astype(np.float32)
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
@@ -122,6 +122,10 @@ async def predict(
         
         # Using the new disease-specific recommendations engine
         recommendations = get_recommendations(disease_label, lang)
+        
+        # Override original names with translated/formatted names from recommendations
+        if "disease_name" in recommendations:
+            disease_name = recommendations["disease_name"]
 
         # Base description
         description_text = (
@@ -136,11 +140,10 @@ async def predict(
                 translator = GoogleTranslator(source="en", target=lang)
                 description_text = translator.translate(description_text)
                 
-                # Also translate crop and disease names to show in UI correctly
+                # Also translate crop name
                 crop_name = translator.translate(crop_name)
-                disease_name = translator.translate(disease_name)
                 
-                # Translate severity
+                # severity translation
                 severity = translator.translate(severity)
             except Exception as e:
                 print(f"Error translating description/names: {e}")
@@ -150,9 +153,16 @@ async def predict(
             "cropName": crop_name,
             "diseaseName": disease_name,
             "confidence": f"{confidence * 100:.1f}%",
+            "confidenceScore": confidence, # Passing raw float for the UI meter
             "severity": severity,
             "description": description_text,
-            "recommendations": recommendations,
+            "symptoms": recommendations.get("symptoms", ""),
+            "cause": recommendations.get("cause", ""),
+            "recommendations": {
+                "biological": recommendations.get("biological", []),
+                "chemical": recommendations.get("chemical", []),
+                "preventive": recommendations.get("preventive", [])
+            },
         }
 
 

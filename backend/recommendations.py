@@ -1,91 +1,100 @@
 from deep_translator import GoogleTranslator
 import time
 
-def translate_recommendations(recs: dict, target_lang: str) -> dict:
+def translate_recommendations(data: dict, target_lang: str) -> dict:
     if target_lang == 'en':
-        return recs
+        return data
         
     translator = GoogleTranslator(source='en', target=target_lang)
-    translated_recs = {}
+    translated_data = {}
     
-    for key, items_list in recs.items():
-        translated_list = []
-        for item in items_list:
+    # Define keys that need translation
+    translatable_keys = ["disease_name", "symptoms", "cause"]
+    list_keys = ["biological", "chemical", "preventive"]
+    
+    for key, value in data.items():
+        if key in translatable_keys:
             try:
-                time.sleep(0.1) # Small sleep to avoid rate limiting
-                translated_item = translator.translate(item)
-                translated_list.append(translated_item)
-            except Exception as e:
-                print(f"Error translating recommendation: {e}")
-                translated_list.append(item) # fallback to english
-        translated_recs[key] = translated_list
-        
-    return translated_recs
+                time.sleep(0.05)
+                translated_data[key] = translator.translate(value)
+            except:
+                translated_data[key] = value
+        elif key in list_keys:
+            translated_list = []
+            for item in value:
+                try:
+                    time.sleep(0.05)
+                    translated_list.append(translator.translate(item))
+                except:
+                    translated_list.append(item)
+            translated_data[key] = translated_list
+        else:
+            translated_data[key] = value
+            
+    return translated_data
 
 def get_recommendations(disease_label: str, lang: str = 'en') -> dict:
     """
-    Returns specific recommendations based on the disease category,
-    translated into the requested language.
-    Categorizes the 39 PlantVillage classes into Fungal, Bacterial, Viral, Pests, or Healthy.
+    Returns specific, structured recommendations based on the disease category.
+    Includes symptoms, cause, and specific treatment options.
     """
     disease_lower = disease_label.lower()
-    recs = {}
     
-    # 1. Healthy Plants
+    # Default data for healthy plants
     if "healthy" in disease_lower:
-        recs = {
-            "immediate": ["No immediate treatment required – plant is healthy."],
-            "organic": ["Continue using organic compost (e.g., Vermicompost) to maintain soil health."],
-            "chemical": ["No chemical pesticide needed.", "Apply balanced NPK fertilizer (19:19:19) for generic growth."],
-            "preventive": ["Maintain crop rotation.", "Provide adequate spacing for air circulation.", "Visit your nearest Agro-Center to restock on organic seeds and fertilizers."]
+        data = {
+            "disease_name": "Healthy",
+            "symptoms": "The plant shows no visible signs of stress or disease. Leaves are green and vibrant.",
+            "cause": "Ideal growing conditions and proper care.",
+            "biological": ["No biological treatment needed.", "Continue using organic compost."],
+            "chemical": ["No chemical treatment needed.", "Optional: Apply balanced NPK (19:19:19) for growth."],
+            "preventive": ["Maintain crop rotation.", "Ensure proper spacing for air circulation."]
         }
     
-    # 2. Viral Diseases (Leaf Curl, Mosaic Virus)
+    # Viral Diseases
     elif any(v in disease_lower for v in ["virus", "curl", "mosaic"]):
-        recs = {
-            "immediate": [
-                "Remove and burn/bury infected plants immediately to prevent spread.",
-                "Rogue (destroy) symptomatic plants as there is no cure for viral infections."
-            ],
-            "organic": ["Use reflective mulches to deter aphids/whiteflies.", "Apply Neem Oil (1500 PPM) to manage insect vectors."],
-            "chemical": ["Apply systemic insecticides like Bayer Confidor (Imidacloprid) or Syngenta Actara (Thiamethoxam) to control vectors.", "Use exactly as per label instructions."],
-            "preventive": ["Use virus-free seeds.", "Control weeds that may harbor the virus.", "Ask your local fertilizer shop for virus-resistant seed varieties for the next season."]
-        }
-    
-    # 3. Bacterial Diseases (Bacterial Spot, Citrus Greening/Haunglongbing)
-    elif "bacterial" in disease_lower or "haunglongbing" in disease_lower:
-        recs = {
-            "immediate": [
-                "Prune infected branches and destroy them.",
-                "Avoid overhead watering which spreads bacteria via splashing."
-            ],
-            "organic": ["Apply Copper Oxychloride (Blitox 50) sprays approved for organic use early in the season.", "Improve soil drainage."],
-            "chemical": ["Use Streptomycin sulfate (Plantomycin) or specialized bactericides if permitted locally.", "Apply fixed copper fungicides (Syngenta Blue Copper)."],
-            "preventive": ["Sanitize tools after every use.", "Source certified disease-free seedlings.", "Consult your nearby Krishi Seva Kendra for localized soil testing kits."]
-        }
-    
-    # 4. Pests (Spider Mites)
-    elif "spider_mites" in disease_lower:
-        recs = {
-            "immediate": [
-                "Blast the undersides of leaves with a strong stream of water to dislodge mites.",
-                "Increase humidity in the area if possible."
-            ],
-            "organic": ["Apply Insecticidal soap or Horticultural Oil.", "Release predatory mites (biological control)."],
-            "chemical": ["Apply specialized miticides like UPL Phoskill (Monocrotophos) or Bayer Oberon (Spiromesifen).", "Ensure thorough coverage of leaf undersides."],
-            "preventive": ["Monitor plants regularly during dry, hot weather.", "Keep plants well-watered to reduce stress.", "Purchase preventive miticides from your fast-delivery local agro shop before summer hits."]
-        }
-    
-    # 5. Fungal Diseases (Everything else: Scab, Rust, Blight, Mildew, Spot, Rot, Mold, Esca)
-    else:
-        recs = {
-            "immediate": [
-                "Remove visibly infected leaves/fruit immediately.",
-                "Improve air circulation by pruning dense foliage."
-            ],
-            "organic": ["Apply Sulfur-based fungicides (UPL Sulflox) or Potassium Bicarbonate sprays.", "Use compost tea to boost plant immunity."],
-            "chemical": ["Apply broad-spectrum fungicides like Syngenta Amistar (Azoxystrobin) or Bayer Luna Sensation.", "Use systemic fungicides like Ridomil Gold for deep-seated infections."],
-            "preventive": ["Avoid watering foliage; use drip irrigation.", "Rotate crops to non-host plants for 3 years.", "Contact your nearby fertilizer retailer to purchase high-quality drip irrigation supplies."]
+        data = {
+            "disease_name": "Viral Infection",
+            "symptoms": "Yellowing of leaves, stunted growth, curling or wrinkling of foliage, and mosaic-like patterns.",
+            "cause": "Viruses primarily transmitted by sap-sucking insects like aphids and whiteflies.",
+            "biological": ["Use Neem Oil (1500 PPM) to control insect vectors.", "Introduce ladybugs to eat aphids."],
+            "chemical": ["Apply Imidacloprid (Bayer Confidor) to control vectors.", "Use Thiamethoxam (Actara) for rapid whitefly control."],
+            "preventive": ["Plant virus-resistant varieties.", "Install insect nets in greenhouses.", "Quickly rogue and destroy infected plants."]
         }
         
-    return translate_recommendations(recs, lang)
+    # Bacterial Diseases
+    elif "bacterial" in disease_lower or "haunglongbing" in disease_lower:
+        data = {
+            "disease_name": "Bacterial Infection",
+            "symptoms": "Water-soaked spots on leaves that turn brown or black, often with a yellow halo.",
+            "cause": "Bacteria spreading through water splashes, contaminated tools, or wind-blown rain.",
+            "biological": ["Apply Copper Oxychloride (Blitox 50) as it has bactericidal properties.", "Improve field drainage."],
+            "chemical": ["Use Streptomycin sulfate (Plantomycin) sprays.", "Apply fixed copper fungicides to prevent further spread."],
+            "preventive": ["Disinfect farm tools regularly.", "Avoid overhead irrigation.", "Source certified disease-free seeds."]
+        }
+
+    # Pests (Mites, Insects)
+    elif "mites" in disease_lower or "spider_mites" in disease_lower:
+        data = {
+            "disease_name": "Pest Infestation (Mites)",
+            "symptoms": "Fine silvery webbing on leaves, yellow stippling (dots), and leaf drop.",
+            "cause": "Spider mites thriving in hot, dry conditions with low humidity.",
+            "biological": ["Blast plant with high-pressure water stream.", "Apply Insecticidal soap.", "Release Phytoseiulus persimilis (predatory mites)."],
+            "chemical": ["Apply Spiromesifen (Bayer Oberon).", "Use Hexythiazox or Abamectin as specialized miticides."],
+            "preventive": ["Keep plants well-hydrated.", "Increase humidity around the crop.", "Regular scouting for early detection."]
+        }
+
+    # Fungal Diseases (Everything else)
+    else:
+        # We can extract the specific name for better display if not one of the above
+        display_name = disease_label.replace("___", " ").replace("_", " ")
+        data = {
+            "disease_name": display_name,
+            "symptoms": "Visible fungal growth (mold/mildew), dark spots, wilting, or necrotic areas on leaves.",
+            "cause": "Fungal spores spreading via air, soil or water, often in humid weather.",
+            "biological": ["Use Bacillus subtilis based bio-fungicides.", "Apply Sulfur dust or Potassium Bicarbonate sprays."],
+            "chemical": ["Apply Azoxystrobin (Amistar) or Tebuconazole.", "For deep infections, use systemic fungicides like Ridomil Gold."],
+            "preventive": ["Ensure proper plant spacing.", "Remove and burn old crop residues.", "Apply preventive Mancozeb sprays during monsoon."]
+        }
+        
+    return translate_recommendations(data, lang)

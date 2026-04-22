@@ -19,6 +19,7 @@ import ExpertCard from "../components/ExpertCard";
 const Home = () => {
   const { t } = useTranslation();
   const [weather, setWeather] = useState(null);
+  const [showAllExperts, setShowAllExperts] = useState(false);
 
   useEffect(() => {
     getWeatherData().then((data) => setWeather(data));
@@ -186,12 +187,15 @@ const Home = () => {
               {t("experts.subtitle")}
             </p>
           </div>
-          <button className="text-emerald-600 font-extrabold hover:underline flex items-center gap-2">
-            {t("experts.viewAll")} <span className="text-xl">→</span>
+          <button 
+            className="text-emerald-600 font-extrabold hover:underline flex items-center gap-2 transition-all active:scale-95"
+            onClick={() => setShowAllExperts(!showAllExperts)}
+          >
+            {showAllExperts ? "Show Less" : t("experts.viewAll")} <span className={`text-xl transition-transform ${showAllExperts ? '-rotate-90' : 'rotate-0'}`}>→</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-500">
           {[
             {
               name: "Dr. Aris Sudarsono",
@@ -220,7 +224,36 @@ const Home = () => {
               knowledge: ["Pest Management", "Mango Hopper", "Apple Scab", "Drip Irrigation"],
               bio: "Rahul leverages modern sensing technology to detect micro-climate changes that lead to pest infestations. He provides actionable insights for orchards and fruit crops."
             },
-          ].map((expert, i) => (
+            {
+              name: "Dr. Elena Rostova",
+              role: "Botanical Researcher",
+              location: "Germany",
+              status: "online",
+              img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
+              knowledge: ["Grape Phylloxera", "Vineyard Health", "Mildew", "Cold Hardiness"],
+              bio: "Elena specializes in viticulture pathology. She has spent the last decade researching organic prevention methods for powdery rust and mildew specifically targeting European grape varietals."
+            },
+            {
+              name: "Chen Wei",
+              role: "Hydroponics Specialist",
+              location: "Singapore",
+              status: "offline",
+              img: "https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=600&auto=format&fit=crop",
+              knowledge: ["Root Rot", "Water Quality", "Leaf Spot", "Indoor Farming"],
+              bio: "Chen is an expert in soilless environments. He consults for major vertical farms in urban Asia, specializing in preventing rapid transmission of waterborne pathogens like pythium (root rot)."
+            },
+            {
+              name: "Maria Gonzalez",
+              role: "Integrated Pest Manager",
+              location: "Mexico",
+              status: "online",
+              img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600&auto=format&fit=crop",
+              knowledge: ["Whiteflies", "Coffee Rust", "Biological Control", "Agroecology"],
+              bio: "Maria strongly opposes harsh chemical pesticides. She teaches farmers how to introduce natural predator insects and use intercropping strategies to defend coffee and avocado plantations."
+            }
+          ]
+          .slice(0, showAllExperts ? 6 : 3)
+          .map((expert, i) => (
             <ExpertCard key={i} expert={expert} />
           ))}
         </div>
